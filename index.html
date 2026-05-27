@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioscience Derivatives: Tilapia Growth Rate</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 2px solid #27ae60; padding-bottom: 10px; }
+        .formula-box { background: #e8f6ef; padding: 15px; border-left: 5px solid #27ae60; margin: 20px 0; font-size: 1.1em; }
+        #info-panel { margin-top: 20px; padding: 15px; border: 1px dashed #27ae60; background: #fff; min-height: 80px; }
+        .footer { font-size: 0.8em; color: #7f8c8d; margin-top: 30px; text-align: center; }
+        canvas { cursor: crosshair; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Tilapia Growth Analysis in Malaysia</h1>
+    <p>In Malaysian aquaculture, monitoring the <strong>Red Tilapia (Oreochromis niloticus)</strong> is vital for food security. We model the weight gain using a simplified logistic-style growth curve over a 20-week production cycle.</p>
+
+    <div class="formula-box">
+        <strong>Growth Function:</strong> \( f(x) = \frac{600}{1 + e^{-0.4(x-10)}} \) <br>
+        <strong>Derivative (Rate of Change):</strong> \( f'(x) = \frac{240e^{-0.4(x-10)}}{(1 + e^{-0.4(x-10)})^2} \)
+    </div>
+
+    <p><em>Click anywhere on the graph to calculate the instantaneous growth rate (g/week).</em></p>
+    
+    <canvas id="growthChart"></canvas>
+
+    <div id="info-panel">
+        <strong>Result:</strong> Click on the graph to see the derivative calculation at that point in the production cycle.
+    </div>
+
+    <hr>
+    <h3>The Bioscience Problem</h3>
+    <p>Farmers need to know not just how heavy the fish are, but <strong>how fast they are growing right now</strong>. The derivative \( f'(x) \) tells us the exact point where growth peaks (the inflection point). If the growth rate drops significantly, it's often a sign to harvest or check water quality/feed efficiency.</p>
+</div>
+
+<div class="footer">
+    Data Reference: Adapted from DOF Malaysia (Department of Fisheries) Aquaculture Statistics & Feed Conversion Ratio (FCR) Guidelines.
+</div>
+
+<script>
+    // Logic for the formulas
+    const L = 600; // Carrying capacity/Max weight in grams
+    const k = 0.4; // Growth rate constant
+    const x0 = 10; // Midpoint in weeks
+
+    function f(x) {
+        return L / (1 + Math.exp(-k * (x - x0)));
+    }
+
+    function fDash(x) {
+        const expTerm = Math.exp(-k * (x - x0));
+        return (L * k * expTerm) / Math.pow(1 + expTerm, 2);
+    }
+
+    // Data generation
+    const labels = [];
+    const weightData = [];
+    for (let x = 0; x <= 20; x += 0.5) {
+        labels.push(x);
+        weightData.push(f(x));
+    }
+
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    const growthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Fish Weight (grams)',
+                data: weightData,
+                borderColor: '#27ae60',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 2000, easing: 'easeOutQuart' },
+            scales: {
+                x: { title: { display: true, text: 'Weeks Post-Stocking' } },
+                y: { title: { display: true, text: 'Weight (g)' } }
+            },
+            onClick: (e) => {
+                const points = growthChart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, true);
+                if (points.length) {
+                    const index = points[0].index;
+                    const week = labels[index];
+                    const weight = weightData[index].toFixed(2);
+                    const rate = fDash(week).toFixed(2);
+
+                    let layman = "";
+                    if (week < 8) layman = "The fish are in the 'lag phase'—building their internal systems.";
+                    else if (week >= 8 && week <= 12) layman = "Peak metabolic efficiency! This is the most cost-effective time for feeding.";
+                    else layman = "Growth is slowing down. The fish are reaching maturity and feed cost per gram of gain is increasing.";
+
+                    document.getElementById('info-panel').innerHTML = `
+                        <strong>Week ${week}:</strong><br>
+                        Current Weight: ${weight}g | <strong>Growth Rate (f'): ${rate} g/week</strong><br>
+                        <em>Explanation: ${layman}</em>
+                    `;
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
