@@ -2,132 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Palm Oil Yield Derivative Simulator</title>
+    <title>Aquaculture Biomass Rates via Calculus Derivatives</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white text-gray-800 p-8">
-    <div class="max-w-5xl mx-auto">
-        <header class="mb-8 border-b-2 border-green-700 pb-4">
-            <p class="text-sm font-bold text-green-800 uppercase tracking-widest">SFM: FOOD SECURITY & BIOSCIENCE ANALYTICS</p>
-            <h1 class="text-3xl font-bold text-green-700 uppercase">Application of Derivatives in Malaysian Palm Oil Yields</h1>
-            <p class="text-gray-600 italic text-sm mt-1">Analyzing Fresh Fruit Bunch (FFB) weight accumulation rates via Calculus Derivatives.</p>
-        </header>
-
-        <section class="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8 shadow-sm text-sm">
-            <h2 class="text-lg font-bold mb-2 flex items-center text-green-900">
-                <span class="mr-2">🦠</span> The Bioscience Problem: When do we harvest?
-            </h2>
-            <p class="leading-relaxed">
-                In Malaysian oil palm estates, tracking the <b>instantaneous growth rate</b> is vital. By calculating the <b>derivative</b> (f'(x)), agronomists can identify the <i>inflection point</i> where weight gain peaks. Harvesting near this peak ensures maximum palm oil yield with minimal nutrient loss and economic waste.
-            </p>
-            <p class="text-xs text-gray-500 mt-4 italic border-t pt-2">
-                <b>Data Reference Framework:</b> Parameters adapted from MPOB agronomic yield models.
-            </p>
-        </section>
-
-        <div class="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
-            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-lg">
-                <canvas id="growthChart" height="100"></canvas>
-                
-                <div class="mt-8 bg-gray-50 p-4 rounded-lg border">
-                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-tight">
-                        Interactive Analytics Toolkit: <span class="text-green-600 font-extrabold italic">Drag slider to query data</span>
-                    </label>
-                    <input type="range" id="weekSlider" min="0" max="24" step="0.5" value="12" 
-                           class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-700">
-                    <div class="flex justify-between text-[10px] text-gray-400 mt-1 font-bold">
-                        <span>WEEK 0</span><span>WEEK 6</span><span>WEEK 12 (PEAK)</span><span>WEEK 18</span><span>WEEK 24</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gray-900 p-6 rounded-xl text-white shadow-2xl border-t-4 border-blue-500">
-                <h2 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4 flex justify-between items-center">
-                    <span>⚙️ Dynamic Derivative Diagnostic Engine</span>
-                    <span class="text-[10px] animate-pulse">● Status: Live Listener Active</span>
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="border-l border-gray-700 pl-4">
-                        <p class="text-[10px] text-gray-400 uppercase font-bold">Time Phase (X)</p>
-                        <p id="weekDisplay" class="text-3xl font-mono font-bold text-white">12.0 <span class="text-xs text-gray-500">weeks</span></p>
-                    </div>
-                    <div class="border-l border-gray-700 pl-4">
-                        <p class="text-[10px] text-gray-400 uppercase font-bold">Current Mass f(x)</p>
-                        <p id="weightDisplay" class="text-3xl font-mono font-bold text-white">12.500 <span class="text-xs text-gray-500">kg</span></p>
-                    </div>
-                    <div class="border-l border-gray-700 pl-4"><p class="text-[10px] text-gray-400 uppercase font-bold">Growth Velocity f'(x)</p>
-                        <p id="rateDisplay" class="text-3xl font-mono font-bold text-green-400">2.500 <span class="text-xs text-green-900">kg/wk</span></p>
-                    </div>
-                </div>
-
-                <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-green-500">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Biological & Management Interpretation:</p>
-                    <p id="insightText" class="text-sm italic text-gray-300 leading-relaxed"></p>
-                </div>
-            </div>
+<body class="bg-gray-50 text-gray-900 p-8">
+    <div class="max-w-6xl mx-auto bg-white p-8 shadow-xl rounded-lg">
+        <div class="border-b pb-6 mb-6">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">MY MALAYSIA FOOD SECURITY STRATEGY • SFM BIOSCIENCE ANALYTICS</p>
+            <h1 class="text-3xl font-bold mt-1">Aquaculture Biomass Rates via Calculus Derivatives</h1>
+            <p class="text-gray-600 mt-2">Using the first derivative $f'(x)$ to optimize Feed Conversion Ratios (FCR) in Malaysian Black Tiger Shrimp farming.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-center">
-            <div class="p-4 border rounded-xl bg-gray-50">
-                <h3 class="text-xs font-bold text-gray-500 uppercase">Growth Model f(x)</h3>
-                <p class="text-sm font-mono mt-1 italic font-bold text-green-800">f(x) = 25 / (1 + e^(-0.4 * (x - 12)))</p>
+        <div class="bg-gray-100 p-6 rounded-lg mb-8 border-l-4 border-red-500">
+            <h2 class="font-bold text-lg mb-2">The Bioscience Problem: When do we harvest?</h2>
+            <p class="text-sm leading-relaxed">In Malaysian coastal aquaculture, feeds constitute over 60% of total operational costs. By tracking the <b>instantaneous growth rate</b>—the first derivative $f'(x)$—biologists identify the precise week where growth velocity peaks. Harvesting near this peak ensures maximum protein yield.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div>
+                <canvas id="growthChart"></canvas>
+                <div class="mt-4">
+                    <label class="block text-sm font-bold mb-2">Interactive Day Selector:</label>
+                    <input type="range" id="weekSlider" min="0" max="22" step="0.1" value="9.5" class="w-full accent-blue-600">
+                </div>
             </div>
-            <div class="p-4 border rounded-xl bg-gray-50">
-                <h3 class="text-xs font-bold text-gray-500 uppercase">Derivative Model f'(x)</h3>
-                <p class="text-sm font-mono mt-1 italic font-bold text-blue-800">f'(x) = (10e^-0.4(x-12)) / (1+e^-0.4(x-12))^2</p>
+            
+            <div class="bg-gray-900 text-white p-6 rounded-lg">
+                <h3 class="text-blue-400 font-bold mb-4 uppercase text-xs tracking-widest">Dynamic Derivative Diagnostic Engine</h3>
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div><p class="text-gray-400 text-xs uppercase">Time Phase (x)</p><p id="weekDisp" class="text-2xl font-bold">9.5 weeks</p></div>
+                    <div><p class="text-gray-400 text-xs uppercase">Current Mass f(x)</p><p id="weightDisp" class="text-2xl font-bold">18.37 grams</p></div>
+                </div>
+                <p class="text-blue-300 font-bold text-xl mb-4">Growth Velocity f'(x): <span id="rateDisp" class="text-white">3.62 g/week</span></p>
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-xs font-bold text-gray-400 uppercase mb-1">Biological & Management Interpretation (Layman Terms):</p>
+                    <p id="insightText" class="text-sm italic">At week 9.5, the shrimp has reached its maximum acceleration inflection point.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const ctx = document.getElementById('growthChart').getContext('2d');
-        const weekSlider = document.getElementById('weekSlider');
+        const slider = document.getElementById('weekSlider');
         
-        let chart = new Chart(ctx, {
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Array.from({length: 49}, (_, i) => (i/2).toFixed(1)),
+                labels: Array.from({length: 221}, (_, i) => (i/10).toFixed(1)),
                 datasets: [
-                    { label: 'FFB Weight f(x) (kg)', data: [], borderColor: '#15803d', backgroundColor: 'rgba(21, 128, 61, 0.1)', fill: true, tension: 0.4, pointRadius: 0 },
-                    { label: 'Growth Velocity f\'(x) (kg/wk)', data: [], borderColor: '#2563eb', borderDash: [5, 5], tension: 0.4, pointRadius: 0 }
+                    { label: 'Weight f(x)', data: [], borderColor: '#064e3b', fill: false },
+                    { label: 'Growth Rate f\'(x)', data: [], borderColor: '#2563eb', borderDash: [5,5], fill: false }
                 ]
             },
-            options: {
-                responsive: true,
-                interaction: { intersect: false, mode: 'index' },
-                scales: {
-                    x: { title: { display: true, text: 'Weeks Post-Anthesis', font: { weight: 'bold' } } },
-                    y: { title: { display: true, text: 'Measured Value', font: { weight: 'bold' } } }
-                }
-            }
+            options: { responsive: true, elements: { point: { radius: 0 } } }
         });
 
-        function updateData() {
-            const x = parseFloat(weekSlider.value);
-            const L = 25, k = 0.4, x0 = 12;
-            const f = L / (1 + Math.exp(-k * (x - x0)));
-            const df = (L * k * Math.exp(-k * (x - x0))) / Math.pow(1 + Math.exp(-k * (x - x0)), 2);
-
-            document.getElementById('weekDisplay').innerHTML = x.toFixed(1) + " <span class='text-xs text-gray-500'>weeks</span>";
-            document.getElementById('weightDisplay').innerHTML = f.toFixed(3) + " <span class='text-xs text-gray-500'>kg</span>";
-            document.getElementById('rateDisplay').innerHTML = df.toFixed(3) + " <span class='text-[10px] text-green-700 italic'>kg/week</span>";
+        function update() {
+            const x = parseFloat(slider.value);
+            const f = 45 * Math.exp(-Math.exp(-0.22 * (x - 9)));
+            const df = 9.9 * Math.exp(-0.22 * (x - 9)) * Math.exp(-Math.exp(-0.22 * (x - 9)));
             
-            document.getElementById('insightText').innerText = x < 12 
-                ? At week ${x.toFixed(1)}, the fruit bunch is in the logarithmic growth phase. It is gaining mass rapidly. Management should ensure optimal water and nutrient levels.
-                : At week ${x.toFixed(1)}, the growth velocity has passed its peak. The bunch is maturing. Harvesting should be scheduled within the next 7-14 days for optimal oil quality.;
+            document.getElementById('weekDisp').innerText = x.toFixed(1) + " weeks";
+            document.getElementById('weightDisp').innerText = f.toFixed(2) + " grams";document.getElementById('rateDisp').innerText = df.toFixed(2) + " g/week";
+            document.getElementById('insightText').innerText = At week ${x.toFixed(1)}, the shrimp is averaging ${f.toFixed(2)} grams. Growth velocity is at ${df.toFixed(2)} g/week. This is your window of maximum feed efficiency.;
+
+            chart.data.datasets[0].data = chart.data.labels.map(x => 45 * Math.exp(-Math.exp(-0.22 * (x - 9))));
+            chart.data.datasets[1].data = chart.data.labels.map(x => 9.9 * Math.exp(-0.22 * (x - 9)) * Math.exp(-Math.exp(-0.22 * (x - 9))));
+            chart.update('none');
         }
-
-        // Generate full data for graph
-        const L = 25, k = 0.4, x0 = 12;
-        const graphLabels = Array.from({length: 49}, (_, i) => i/2);
-        chart.data.datasets[0].data = graphLabels.map(v => L / (1 + Math.exp(-k * (v - x0))));
-        chart.data.datasets[1].data = graphLabels.map(v => (L * k * Math.exp(-k * (v - x0))) / Math.pow(1 + Math.exp(-k * (v - x0)), 2));
-        chart.update();
-
-        weekSlider.addEventListener('input', updateData);
-        updateData();
+        slider.oninput = update;
+        update();
     </script>
 </body>
 </html>
