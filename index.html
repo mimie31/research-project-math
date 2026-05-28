@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Palm Oil Yield Derivative Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 p-8">
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 border-b-2 border-green-700 pb-4">
+            <p class="text-sm font-bold text-green-800 uppercase tracking-widest">SFM: FOOD SECURITY & BIOSCIENCE ANALYTICS</p>
+            <h1 class="text-3xl font-bold text-green-700 uppercase">Application of Derivatives in Malaysian Palm Oil Yields</h1>
+            <p class="text-gray-600 italic text-sm mt-1">Analyzing Fresh Fruit Bunch (FFB) weight accumulation rates via Calculus Derivatives.</p>
+        </header>
+
+        <section class="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8 shadow-sm text-sm">
+            <h2 class="text-lg font-bold mb-2 flex items-center text-green-900">
+                <span class="mr-2">🦠</span> The Bioscience Problem: When do we harvest?
+            </h2>
+            <p class="leading-relaxed">
+                In Malaysian oil palm estates, tracking the <b>instantaneous growth rate</b> is vital. By calculating the <b>derivative</b> (f'(x)), agronomists can identify the <i>inflection point</i> where weight gain peaks. Harvesting near this peak ensures maximum palm oil yield with minimal nutrient loss and economic waste.
+            </p>
+            <p class="text-xs text-gray-500 mt-4 italic border-t pt-2">
+                <b>Data Reference Framework:</b> Parameters adapted from MPOB agronomic yield models.
+            </p>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-lg">
+                <canvas id="growthChart" height="100"></canvas>
+                
+                <div class="mt-8 bg-gray-50 p-4 rounded-lg border">
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-tight">
+                        Interactive Analytics Toolkit: <span class="text-green-600 font-extrabold italic">Drag slider to query data</span>
+                    </label>
+                    <input type="range" id="weekSlider" min="0" max="24" step="0.5" value="12" 
+                           class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-700">
+                    <div class="flex justify-between text-[10px] text-gray-400 mt-1 font-bold">
+                        <span>WEEK 0</span><span>WEEK 6</span><span>WEEK 12 (PEAK)</span><span>WEEK 18</span><span>WEEK 24</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 p-6 rounded-xl text-white shadow-2xl border-t-4 border-blue-500">
+                <h2 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4 flex justify-between items-center">
+                    <span>⚙️ Dynamic Derivative Diagnostic Engine</span>
+                    <span class="text-[10px] animate-pulse">● Status: Live Listener Active</span>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="border-l border-gray-700 pl-4">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold">Time Phase (X)</p>
+                        <p id="weekDisplay" class="text-3xl font-mono font-bold text-white">12.0 <span class="text-xs text-gray-500">weeks</span></p>
+                    </div>
+                    <div class="border-l border-gray-700 pl-4">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold">Current Mass f(x)</p>
+                        <p id="weightDisplay" class="text-3xl font-mono font-bold text-white">12.500 <span class="text-xs text-gray-500">kg</span></p>
+                    </div>
+                    <div class="border-l border-gray-700 pl-4"><p class="text-[10px] text-gray-400 uppercase font-bold">Growth Velocity f'(x)</p>
+                        <p id="rateDisplay" class="text-3xl font-mono font-bold text-green-400">2.500 <span class="text-xs text-green-900">kg/wk</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-green-500">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Biological & Management Interpretation:</p>
+                    <p id="insightText" class="text-sm italic text-gray-300 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-center">
+            <div class="p-4 border rounded-xl bg-gray-50">
+                <h3 class="text-xs font-bold text-gray-500 uppercase">Growth Model f(x)</h3>
+                <p class="text-sm font-mono mt-1 italic font-bold text-green-800">f(x) = 25 / (1 + e^(-0.4 * (x - 12)))</p>
+            </div>
+            <div class="p-4 border rounded-xl bg-gray-50">
+                <h3 class="text-xs font-bold text-gray-500 uppercase">Derivative Model f'(x)</h3>
+                <p class="text-sm font-mono mt-1 italic font-bold text-blue-800">f'(x) = (10e^-0.4(x-12)) / (1+e^-0.4(x-12))^2</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        const weekSlider = document.getElementById('weekSlider');
+        
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 49}, (_, i) => (i/2).toFixed(1)),
+                datasets: [
+                    { label: 'FFB Weight f(x) (kg)', data: [], borderColor: '#15803d', backgroundColor: 'rgba(21, 128, 61, 0.1)', fill: true, tension: 0.4, pointRadius: 0 },
+                    { label: 'Growth Velocity f\'(x) (kg/wk)', data: [], borderColor: '#2563eb', borderDash: [5, 5], tension: 0.4, pointRadius: 0 }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { intersect: false, mode: 'index' },
+                scales: {
+                    x: { title: { display: true, text: 'Weeks Post-Anthesis', font: { weight: 'bold' } } },
+                    y: { title: { display: true, text: 'Measured Value', font: { weight: 'bold' } } }
+                }
+            }
+        });
+
+        function updateData() {
+            const x = parseFloat(weekSlider.value);
+            const L = 25, k = 0.4, x0 = 12;
+            const f = L / (1 + Math.exp(-k * (x - x0)));
+            const df = (L * k * Math.exp(-k * (x - x0))) / Math.pow(1 + Math.exp(-k * (x - x0)), 2);
+
+            document.getElementById('weekDisplay').innerHTML = x.toFixed(1) + " <span class='text-xs text-gray-500'>weeks</span>";
+            document.getElementById('weightDisplay').innerHTML = f.toFixed(3) + " <span class='text-xs text-gray-500'>kg</span>";
+            document.getElementById('rateDisplay').innerHTML = df.toFixed(3) + " <span class='text-[10px] text-green-700 italic'>kg/week</span>";
+            
+            document.getElementById('insightText').innerText = x < 12 
+                ? At week ${x.toFixed(1)}, the fruit bunch is in the logarithmic growth phase. It is gaining mass rapidly. Management should ensure optimal water and nutrient levels.
+                : At week ${x.toFixed(1)}, the growth velocity has passed its peak. The bunch is maturing. Harvesting should be scheduled within the next 7-14 days for optimal oil quality.;
+        }
+
+        // Generate full data for graph
+        const L = 25, k = 0.4, x0 = 12;
+        const graphLabels = Array.from({length: 49}, (_, i) => i/2);
+        chart.data.datasets[0].data = graphLabels.map(v => L / (1 + Math.exp(-k * (v - x0))));
+        chart.data.datasets[1].data = graphLabels.map(v => (L * k * Math.exp(-k * (v - x0))) / Math.pow(1 + Math.exp(-k * (v - x0)), 2));
+        chart.update();
+
+        weekSlider.addEventListener('input', updateData);
+        updateData();
+    </script>
+</body>
+</html>
