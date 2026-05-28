@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Harvest Onion Moisture Decay Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <header class="bg-emerald-800 p-6 rounded-xl text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="bg-emerald-700 text-emerald-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-emerald-600">
+                    SFH: POST-HARVEST LOGISTICS TECHNOLOGY
+                </span>
+                <h1 class="text-3xl font-extrabold mt-2 tracking-tight">
+                    Onion Moisture Decay Derivative Simulator
+                </h1>
+                <p class="text-emerald-100 text-sm mt-1">
+                    Analyzing Cumulative Loss <span class="font-mono font-bold text-amber-300">f(x)</span> and Decay Velocity Derivative <span class="font-mono font-bold text-rose-300">f'(x)</span> in Malaysian Cold-Chain Systems
+                </p>
+            </div>
+            <div class="bg-emerald-900/50 p-4 rounded-lg border border-emerald-700 text-left md:text-right min-w-[240px]">
+                <div class="flex items-center gap-2 justify-start md:justify-end text-xs text-emerald-300">
+                    <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Target Context:
+                </div>
+                <p class="text-white font-bold text-sm mt-1">FAMA & MARDI Storage Standards</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 bg-white p-6 rounded-xl border border-slate-200 flex flex-col justify-between shadow-sm">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <span>📖</span> The Bioscience Scenario
+                    </h2>
+                    <div class="space-y-4 text-sm text-slate-600 leading-relaxed">
+                        <p>
+                            In intensive bulb onion storage management, moisture loss is non-linear and conforms to a sigmoidal (S-shaped) logistic curve. Understanding the instantaneous rate of change—the **First Derivative \(f'(x)\)**—is critical.
+                        </p>
+                        <p>
+                            The derivative represents the daily average water loss (grams/kg/day). In agricultural logistics, identifying when the decay rate peaks is vital. Once the derivative peaks and begins to decline, the bulb's structural integrity decreases rapidly.
+                        </p>
+                        <p>
+                            Keeping onions past this peak increases supply risk dramatically, as rot represents nearly 70% of total post-harvest storage losses in tropical climates like Malaysia.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Live Moisture Loss Profile
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Click anywhere on the chart or drag the slider below to calculate instantaneous derivatives!</p><</div>
+                    <div class="flex gap-4 text-xs font-semibold bg-slate-50 p-2 rounded border border-slate-200">
+                        <span class="text-indigo-600">▬ Weight Loss (g/kg)</span>
+                        <span class="text-emerald-600">▬ Decay Velocity (g/day)</span>
+                    </div>
+                </div>
+                
+                <div class="relative w-full bg-slate-50 rounded-lg p-2 border border-slate-200 grow h-[320px]">
+                    <canvas id="mainDashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-bold text-slate-700 font-mono">Interactive Day Selector:</span>
+                <span class="text-emerald-600 font-bold text-sm font-mono bg-emerald-50 px-3 py-1 rounded">Day <span id="txtDayDisplay">21</span></span>
+            </div>
+            <input type="range" id="inputDaySlider" min="0" max="42" step="1" value="21" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-5 bg-white p-6 rounded-xl border border-slate-200 space-y-4 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    📊 Mathematical Growth Model
+                </h2>
+                
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <p class="text-xs text-indigo-700 mb-1 font-bold">Cumulative Loss \(f(x)\):</p>
+                    <div class="text-center py-2 text-slate-800 font-bold text-base">
+                        $$f(x) = \frac{W_{max}}{1 + \beta \cdot e^{-k \cdot \eta \cdot x}}$$
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <p class="text-xs text-emerald-700 mb-1 font-bold">Derivative \(f'(x)\) (Daily Growth Rate):</p>
+                    <div class="text-center py-2 text-slate-800 font-bold text-base">
+                        $$f'(x) = \frac{W_{max} \cdot \beta \cdot (k \cdot \eta) \cdot e^{-k \cdot \eta \cdot x}}{(1 + \beta \cdot e^{-k \cdot \eta \cdot x})^2}$$
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] text-slate-600 pt-2 font-mono border-t border-slate-100">
+                    <div>\(x\) = Day of Storage cycle (0 to 42)</div>
+                    <div>\(W_{max}\) = Target asymptotic loss (g)</div>
+                    <div>\(\beta\) = Scaling parameter (fixed at 55)</div>
+                    <div>\(k\) = Biological decay coefficient</div>
+                    <div class="col-span-2 text-amber-600 font-bold">\(\eta\) = Housing Efficiency Index (0.7 to 1.15)</div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 space-y-4">
+                    <h3 class="text-sm font-bold text-amber-600 flex items-center gap-1">⚙️ Environmental & Husbandry Factors</h3>
+                    
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-mono font-bold">
+                            <span class="text-slate-700">Target Weight Asymptote (\(W_{max}\))</span>
+                            <span id="txtWmaxValue" class="text-amber-600">2500 g</span>
+                        </div>
+                        <input type="range" id="inputWmaxSlider" min="1500" max="3500" step="500" value="2500" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-mono font-bold">
+                            <span class="text-slate-700">Housing & Climate Efficiency Index (\(\eta\))</span>
+                            <span id="txtEtaValue" class="text-amber-600">1.00</span>
+                        </div>
+                        <input type="range" id="inputEtaSlider" min="0.7" max="1.15" step="0.05" value="1.00" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                            <span>Open House (Heat Stress)</span>
+                            <span>Closed Tunnel House (Optimal)</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 italic">Accounts for wind chill velocity, evaporative cooling pads, and stocking density.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+                
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
+                            <div class="bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg p-2 text-center min-w-[90px]">
+                                <span class="block text-[10px] font-mono uppercase font-black tracking-wider">Calculus</span>
+                                <span class="block text-sm font-bold leading-none mt-0.5">HUD</span>
+                            </div>
+                            <div class="grow">
+                                <h3 class="text-base font-bold text-slate-900 leading-tight">Dynamic Derivative Evaluator</h3>
+                                <p class="text-xs text-slate-500">Instantaneous bioscience performance metrics computed for Day <span id="txtDayLabel">21</span></p>
+                            </div>
+                            <div class="bg-emerald-800 text-white font-mono text-xs px-4 py-2 rounded-lg border border-emerald-900 shadow-sm" id="mathLiveEquationOutput">
+                                \(f'(\text{Day } 21) = 66.5 \ \text{g/day}\)
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <p class="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400">Cumulative Weight \(F(x)\)</p>
+                                <p class="text-3xl font-bold font-mono text-slate-900 mt-1"><span id="metricWeight">654</span> <span class="text-xs text-slate-500 font-normal">g</span></p>
+                                <p class="text-[10px] text-indigo-600 font-semibold mt-1">Maximum exponential slope.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <p class="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400">Growth Speed \(F'(x)\)</p>
+                                <p class="text-3xl font-bold font-mono text-emerald-600 mt-1"><span id="metricSpeed">66.5</span> <span class="text-xs font-normal">g/day</span></p>
+                                <p id="metricSubText" class="text-[10px] text-emerald-600 font-semibold mt-1">Transition to Grower Crumbles.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <p class="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400">Husbandry Status</p>
+                                <p id="metricStatus" class="text-base font-extrabold text-amber-600 mt-2 line-clamp-1">Grower Phase</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Transition feed types.</p>
+                            </div>
+                        </div>
+                    </div></div><div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1 mb-1">
+                            ℹ️ Husbandry Insight & Action (Layman's Terms)
+                        </h4>
+                        <p id="txtLaymanExplanation" class="text-sm text-slate-600 leading-relaxed">
+                            This is the exponential stretch of the logistic curve...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="bg-slate-900 text-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-bold mb-4 border-b border-slate-800 pb-2 text-emerald-400">
+                Deep-Dive: How Calculus Solves Poultry Economics
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-300">
+                <div class="space-y-1">
+                    <p class="font-bold text-white text-base"><span class="text-emerald-400">1</span> The Biological Peak</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        The peak of the derivative curve \(f'(x)\) occurs at the inflection point of the cumulative weight curve \(f(x)\). Mathematically, this is where the second derivative equals zero: \(f''(x) = 0\). Practically, this marks the maximum possible growth efficiency. After this day, the rate of weight accumulation slows down.
+                    </p>
+                </div>
+                <div class="space-y-1">
+                    <p class="font-bold text-white text-base"><span class="text-emerald-400">2</span> The Microclimate Equation</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        In tropical Malaysia, temperatures regularly exceed 30°C. In the simulator, the Housing Efficiency index (\(\eta\)) represents the microclimate parameter. In an open-house system (\(\eta \approx 0.75\)), birds suffer heat stress, slowing metabolic enzyme processes, shifting the inflection point to the right.
+                    </p>
+                </div>
+                <div class="space-y-1">
+                    <p class="font-bold text-white text-base"><span class="text-emerald-400">3</span> Deciding the Harvest Date</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Broilers are usually harvested in Malaysia between days 35 to 42. By cross-referencing feed cost per day, farmers use the derivative curve to locate the point where profit margins are maximized. Harvesting on day 35 meets standard wet-market requirements, while day 42 caters to downstream portions.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-white p-5 rounded-xl border border-slate-200 text-xs text-slate-500 shadow-sm">
+            <p class="font-bold uppercase tracking-widest text-slate-400 text-xs mb-3">MALAYSIAN DATA & RESEARCH SOURCES REFERENCES</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <p><span class="text-emerald-600 font-bold">✓ Department of Veterinary Services (DVS) Malaysia:</span> Chicken performance data standards for closed-house ventilation structures. <span class="text-emerald-600 underline font-mono">dvs.gov.my</span></p>
+                    <p><span class="text-emerald-600 font-bold">✓ Cobb-Vantress Breeder Guidelines:</span> Cobb 500 growth charts adjusted for tropical environments and high humidity climates. <span class="text-emerald-600 underline font-mono">cobb-vantress.com</span></p>
+                </div>
+                <div class="space-y-2">
+                    <p><span class="text-emerald-600 font-bold">✓ MARDI (Malaysian Agricultural Research and Development Institute):</span> Broiler feedingmardi.gov.my</span></p>
+                    <p><span class="text-emerald-600 font-bold">✓ Federation of Livestock Farmers' Associations of Malaysia (FLFAM):</span> Local market feed prices and chick placement dynamics data. <span class="text-emerald-600 underline font-mono">flfam.org.my</span></p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Mathematical Constants matching your blueprint
+        const BETA = 55;     
+        const K_CONST = 0.15; 
+
+        // DOM elements
+        const daySlider = document.getElementById('inputDaySlider');
+        const etaSlider = document.getElementById('inputEtaSlider');
+        const wmaxSlider = document.getElementById('inputWmaxSlider');
+        
+        const txtDayDisplay = document.getElementById('txtDayDisplay');
+        const txtDayLabel = document.getElementById('txtDayLabel');
+        const txtEtaValue = document.getElementById('txtEtaValue');
+        const txtWmaxValue = document.getElementById('txtWmaxValue');
+        
+        const metricWeight = document.getElementById('metricWeight');
+        const metricSpeed = document.getElementById('metricSpeed');
+        const metricSubText = document.getElementById('metricSubText');
+        const metricStatus = document.getElementById('metricStatus');
+        const txtLaymanExplanation = document.getElementById('txtLaymanExplanation');
+        const mathLiveEquationOutput = document.getElementById('mathLiveEquationOutput');
+
+        // Mathematical functions matching m2.png models
+        function f(x, wmax, eta) {
+            return wmax / (1 + BETA * Math.exp(-K_CONST * eta * x));
+        }
+
+        function f_prime(x, wmax, eta) {
+            const expTerm = Math.exp(-K_CONST * eta * x);
+            const numerator = wmax * BETA * (K_CONST * eta) * expTerm;
+            const denominator = Math.pow(1 + BETA * expTerm, 2);
+            return numerator / denominator;
+        }
+
+        // Initialize coordinate arrays
+        let labels = [];
+        let weightPoints = [];
+        let speedPoints = [];
+
+        function updateDatasetCoordinates() {
+            labels = [];
+            weightPoints = [];
+            speedPoints = [];
+            const currentWmax = parseFloat(wmaxSlider.value);
+            const currentEta = parseFloat(etaSlider.value);
+            
+            for (let day = 0; day <= 42; day++) {
+                labels.push(day);
+                weightPoints.push(f(day, currentWmax, currentEta));
+                speedPoints.push(f_prime(day, currentWmax, currentEta));
+            }
+        }
+
+        updateDatasetCoordinates();
+
+        // Chart.js Dual Axis setup config (Optimized for light background rendering)
+        const ctxCanvas = document.getElementById('mainDashboardChart').getContext('2d');
+        const mainDashboardChart = new Chart(ctxCanvas, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Weight (g)',
+                        data: weightPoints,
+                        borderColor: '#4f46e5', // Indigo line matching original setup
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        yAxisID: 'yLeft',
+                        tension: 0.2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5
+                    },
+                    {
+                        label: 'Growth Rate (g/day)',
+                        data: speedPoints,
+                        borderColor: '#10b981', // Emerald line matching original setup
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        yAxisID: 'yRight',
+                        tension: 0.2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, trial reports, establishing modern localized growth models. <span class="text-emerald-600 underline font-mono">ontrols to real-time functions
+        daySlider.addEventListener('input', syncApplicationCalculations);
+        
+        function handleParameterReconstructions() {
+            updateDatasetCoordinates();
+            mainDashboardChart.data.datasets[0].data = weightPoints;
+            mainDashboardChart.data.datasets[1].data = speedPoints;
+            mainDashboardChart.update('none');
+            syncApplicationCalculations();
+        }
+
+        etaSlider.addEventListener('input', handleParameterReconstructions);
+        wmaxSlider.addEventListener('input', handleParameterReconstructions);
+
+        // Initial launch kickstart
+        syncApplicationCalculations();
+    </script>
+</body>
+</html>
